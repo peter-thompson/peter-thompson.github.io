@@ -21,7 +21,7 @@ function bubbleChart() {
 
   // Locations to move bubbles towards, depending
   // on which view mode is selected.
-  var center = { x: width / 2, y: height / 2 };
+  var center = { x: width / 2 - 30, y: height / 2 +20};
 
   var top_topicCenters = {
     0: { x: width / 3, y: height / 11 },
@@ -395,7 +395,6 @@ function bubbleChart() {
 }
 
   function showTooltip2(d) {
-    console.log(this)
     temp_col = d3.select(this).attr("fill");
     var new_col = LightenDarkenColor(temp_col,-41);
     d3.select(this).attr("fill", new_col)
@@ -411,6 +410,40 @@ function bubbleChart() {
    * Function called on bubble click to display 
    * pie-chart of topic distribution for emploee
    */
+
+  function popSlice(d) {
+  	hideSlice();
+   	temp_topic = d.data['label']
+   	temp_topic_words = topics[temp_topic]
+
+    var text_body = svg.append("g").attr('id', 'text_body')
+
+    d3.select("#text_body").append("text")
+	   						   .style("font-size",30)
+	                           .style("fill","#000")
+	                           .attr('text-anchor','end')
+	                           .attr("dx",width)
+	                           .attr("dy",60)
+	   						   .text("Topic " + temp_topic)  ;
+
+   	increment = 120;
+
+   	for (i = 0; i < temp_topic_words.length; i++){
+	   	d3.select("#text_body").append("text")
+	   						   .style("font-size",30)
+	                           .style("fill","#000")
+	                           .attr('text-anchor','end')
+	                           .attr("dx",width)
+	                           .attr("dy",increment)
+	   						   .text(temp_topic_words[i])  ; 
+	   	increment += 30		
+   	}
+  }
+  function hideSlice() {
+    d3.select("#text_body").remove();
+
+  }
+
   function showPie(emp) {
     //Remove previous pie chart if it exists
     
@@ -419,7 +452,6 @@ function bubbleChart() {
     }
     else{
       d3.select("#removable").remove();
-      // console.log(emp)
 
       var donutWidth = width/14;
       var radius = width/2.5;
@@ -471,11 +503,19 @@ function bubbleChart() {
     var gee = svg.append("g").attr('id', 'removable')
                              .attr('class', emp.id);
 
+   	d3.select("#removable").append("text")
+						   .style("font-size",30)
+                           .style("fill","#000")
+                           .attr("dx",center.x)
+                      	   .attr("dy",22)
+                      	   .attr("text-anchor","middle")
+						   .text(emp.name) ;
+
     var path = gee.selectAll("path")
                   .data(pie(dataset))
                   .enter()
                   .append("path")
-                  .attr("transform", "translate(" + width/2 + "," + height/2 + ")")
+                  .attr("transform", "translate(" + center.x + "," + center.y  + ")")
                   .attr("d",arc)
                   .attr("fill", function(d, i) {
                     return colour(d.data.label);
@@ -486,7 +526,8 @@ function bubbleChart() {
                   .style('stroke', 'white')
                   .style('stroke-width', 5)
                   .on("mouseover", showTooltip2)
-                  .on('mouseout', hideTooltip2);
+                  .on("mouseout", hideTooltip2)
+                  .on("click", popSlice);
   }
 }
 
@@ -511,7 +552,6 @@ function bubbleChart() {
     }
   };
 
-
   // return the chart function from closure.
   return chart;
 }
@@ -531,8 +571,17 @@ function display(error, data) {
   if (error) {
     console.log(error);
   }
-
   myBubbleChart('#vis', data);
+}
+/*
+ *The 20 topics with their accompanying topic words are read in and assigned to variables.
+ */
+var topics = []
+function load_topics(error, data) {
+  if (error) {
+  	console.log(error);	
+  }
+  topics = data;
 }
 
 /*
@@ -578,6 +627,7 @@ function addCommas(nStr) {
 
 // Load the data.
 d3.csv('data/bubbles_data.csv', display);
+d3.json('data/topic_words.jsn', load_topics);
 
 // setup the buttons.
 setupButtons();
