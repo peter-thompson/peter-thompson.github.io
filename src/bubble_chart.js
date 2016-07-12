@@ -446,6 +446,7 @@ function bubbleChart() {
 
   function showPie(emp) {
     //Remove previous pie chart if it exists
+    hideSlice()
     
     if(svg.select("g")[0][0] != null && svg.select("g").attr("class") == emp.id){
       d3.select("#removable").remove();
