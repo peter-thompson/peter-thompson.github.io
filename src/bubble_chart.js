@@ -546,10 +546,13 @@ function bubbleChart() {
    */
   chart.toggleDisplay = function (displayName) {
     if (displayName === 'top_topic') {
-      hidePie();
+      d3.select("svg").remove()
+      d3.csv('data/bubbles_data_a.csv', display);
+	  d3.json('data/topic_words_a.jsn', load_topics);
     } else {
       d3.select("svg").remove()
       d3.csv('data/bubbles_data.csv', display);
+      d3.json('data/topic_words.jsn', load_topics);
     }
   };
 
