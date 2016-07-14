@@ -627,8 +627,8 @@ function addCommas(nStr) {
 }
 
 // Load the data.
-d3.csv('data/bubbles_data_a.csv', display);
-d3.json('data/topic_words_a.jsn', load_topics);
+d3.csv('data/bubbles_data.csv', display);
+d3.json('data/topic_words.jsn', load_topics);
 
 // setup the buttons.
 setupButtons();
